@@ -1,0 +1,152 @@
+<template>
+    <div class="flex flex-col flex-1 items-center">
+        <!-- Banner -->
+        <div v-if="route.query.preview"
+            class="text-white p-4 bg-weather-secondary w-full text-center"
+        >
+            <p>
+                You are currently previewing this city, click the "+"
+                icon to start tracking this city.
+            </p>
+        </div>
+        <!-- Weather Overview -->
+        <div class="flex flex-col items-center text-white py-12">
+            <h1 class="text-4xl mb-2 capitalize">
+                {{ route.params.city }}
+            </h1>
+            <p class="text-sm mb-12">
+                {{
+                    new Date(weatherDataHourly[0].DateTime)
+                    .toLocaleDateString("en-us",
+                    {
+                        weekday: 'short',
+                        day: "2-digit",
+                        month: "long",
+                        hour: 'numeric',
+                        minute: '2-digit'
+                    })
+                }}
+            </p>
+            <p class="text-8xl mb-8 ml-8">
+                {{ Math.round((weatherDataHourly[0].Temperature.Value - 32) * 5/9) }}&deg;
+            </p>
+            <img class="w-[150px] h-auto" 
+                :src="`https://developer.accuweather.com/sites/default/files/${weatherData.DailyForecasts[0].Day.Icon < 10 ? '0' : ''}${weatherData.DailyForecasts[0].Day.Icon}-s.png`"
+            />
+            <p class="capitalize">
+                {{ weatherDataHourly[0].IconPhrase }}
+            </p>
+        </div>
+
+        <hr class="border-white border-opacity-10 border w-full"/>
+        <!-- Weather daily -->
+        <div class="max-w-screen-md w-full py-12">
+            <div class="mx-sm-8 mx-4 text-white">
+                <h2 class="mb-4 text-lg font-bold">5 Day Forecast Weather</h2>
+                <div class="flex gap-16 overflow-x-scroll">
+                    <div v-for="day in weatherData.DailyForecasts" :key="day.Date"
+                        class="flex flex-col gap-4 items-center text-center"
+                    >
+                        <p>
+                            {{
+                                new Date(day.Date)
+                                .toLocaleDateString("en-us",
+                                {
+                                weekday: 'long',
+                                })
+                            }}
+                        </p>
+                        <img class="w-[50px] h-auto" 
+                        :src="`https://developer.accuweather.com/sites/default/files/${day.Day.Icon < 10 ? '0' : ''}${day.Day.Icon}-s.png`"
+                        />
+                        <p>{{ day.Day.IconPhrase }}</p>
+                        <p class="text-lg mb-8 font-semibold">
+                        H: {{ Math.round((day.Temperature.Maximum.Value - 32) * 5/9) }}&deg;
+                        <br />
+                        L: {{  Math.round((day.Temperature.Minimum.Value - 32) * 5/9) }}&deg;
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="border-white border-opacity-10 border w-full"/>
+        <div class="max-w-screen-md w-full py-12">
+            <div class="mx-sm-8 mx-4 text-white">
+                <h2 class="mb-4 text-lg font-bold">12 Hours of Hourly Forecasts</h2>
+                <div class="flex gap-24 overflow-x-scroll">
+                    <div v-for="hour in weatherDataHourly" :key="hour.Date"
+                        class="flex flex-col gap-4 items-center text-center"
+                    >
+                        <p>
+                            {{
+                                new Date(hour.DateTime).getHours()
+                            }}h
+                        </p>
+                        <img class="w-[50px] h-auto" 
+                        :src="`https://developer.accuweather.com/sites/default/files/${hour.WeatherIcon < 10 ? '0' : ''}${hour.WeatherIcon}-s.png`"
+                        />
+                        <p>{{ hour.IconPhrase }}</p>
+                        <p class="text-xl mb-8">
+                        {{ Math.round((hour.Temperature.Value - 32) * 5/9) }}&deg;
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 py-12 text-white cursor-pointer duration-150 hover:text-red-500"
+            @click="removeCity"
+            v-if="route.query.id && !route.query.preview"
+        >
+            <i class="fa-solid fa-trash" />
+            <p>Remove City</p>
+        </div>
+    </div>
+</template>
+
+<script setup>
+import axios from "axios";
+import { useRoute, useRouter } from "vue-router";
+
+const route = useRoute();
+const apiKey = import.meta.env.VITE_API_KEY_ACCU_WEATHER;
+
+const getWeatherData = async () => {
+    try{
+        const weatherData = await axios.get(
+            `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${route.query.key}?apikey=${apiKey}`
+        )
+        return weatherData.data;
+    }catch(e){
+        console.log(e)
+    }
+};
+
+const getWeatherDataByHour = async () => {
+    try{
+        const weatherData = await axios.get(
+            `http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/${route.query.key}?apikey=${apiKey}`
+        )
+        return weatherData.data;
+    }catch(e){
+        console.log(e)
+    }
+}
+
+const weatherData = await getWeatherData();
+const weatherDataHourly = await getWeatherDataByHour();
+
+// Flicker Delay
+await new Promise((res) => setTimeout(res, 1000));
+const router = useRouter();
+const removeCity = () => {
+    const cities = JSON.parse(localStorage.getItem('savedCities'));
+    if (cities && Array.isArray(cities)) {
+        const updatedCities = cities.filter((city) => city.id !== route.query.id);
+        localStorage.setItem("savedCities",JSON.stringify(updatedCities));
+        router.push({
+            name: 'home',
+        })
+    };
+}
+</script>
