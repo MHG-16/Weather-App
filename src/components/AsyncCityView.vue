@@ -114,7 +114,7 @@ const apiKey = "2Ad6OqpWqMShACE4JRORV26fMyQl2Y1R";
 const getWeatherData = async () => {
     try{
         const weatherData = await axios.get(
-            `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${route.query.key}?apikey=${apiKey}`
+            `//dataservice.accuweather.com/forecasts/v1/daily/5day/${route.query.key}?apikey=${apiKey}`
         )
         return weatherData.data;
     }catch(e){
@@ -125,7 +125,7 @@ const getWeatherData = async () => {
 const getWeatherDataByHour = async () => {
     try{
         const weatherData = await axios.get(
-            `http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/${route.query.key}?apikey=${apiKey}`
+            `//dataservice.accuweather.com/forecasts/v1/hourly/12hour/${route.query.key}?apikey=${apiKey}`
         )
         return weatherData.data;
     }catch(e){
