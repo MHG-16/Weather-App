@@ -29,7 +29,7 @@ const previewCity = (resultApi) => {
 const fetchSearchResults = async () => {
   console.log(searchQuery.value)
   return await axios.get(
-  `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${apiKey}&q=${searchQuery.value}`,
+  `//dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${apiKey}&q=${searchQuery.value}`,
 )};
 
 
