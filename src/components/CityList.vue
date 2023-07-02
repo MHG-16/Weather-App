@@ -15,7 +15,7 @@ import CityCard from "./CityCard.vue";
 import { useRouter } from 'vue-router';
 
 const savedCities = ref([]);
-const apiKey = import.meta.env.VITE_API_KEY_ACCU_WEATHER;
+const apiKey = "2Ad6OqpWqMShACE4JRORV26fMyQl2Y1R";
 
 const getCities = async() => {
         if(localStorage.getItem("savedCities")) {
