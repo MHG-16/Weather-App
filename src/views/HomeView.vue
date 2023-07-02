@@ -12,7 +12,7 @@ const searchQuery = ref("");
 const queryTimeout = ref(null);
 const searchError = ref(null);
 
-const apiKey = import.meta.env.VITE_API_KEY_ACCU_WEATHER;
+const apiKey = "2Ad6OqpWqMShACE4JRORV26fMyQl2Y1R";
 
 const previewCity = (resultApi) => {
   const city = resultApi.LocalizedName.toLowerCase(); 
