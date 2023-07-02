@@ -27,7 +27,7 @@ const getCities = async() => {
             savedCities.value.forEach((city) => {
                 requests.push(
                     axios.get(
-                        `http://dataservice.accuweather.com/currentconditions/v1/${city.key}?apikey=${apiKey}`
+                        `//dataservice.accuweather.com/currentconditions/v1/${city.key}?apikey=${apiKey}`
                     )
                 )
             });
